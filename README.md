@@ -26,7 +26,9 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 
 ## 📂 Projects
 
-*Coming soon: links to each project will be added here.*
+| Project | Description | Skills |
+|---------|-------------|--------|
+| 🐧 [Linux Project](./linux-project/README.md) 
 
 ## 📫 Connect With Me
 
