@@ -28,7 +28,7 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 
 | Project | Description | Skills |
 |---------|-------------|--------|
-| 🐧 [Linux Project](./linux-project/README.md) | Walkthrough from Level 0-20 on the OvertheWire Bandit Game| Linux, Bash |
+| 🐧 [Linux Project](./Linux-project/README.md) | Short one-line summary of what you built | Linux, Bash |
 
 ## 📫 Connect With Me
 
