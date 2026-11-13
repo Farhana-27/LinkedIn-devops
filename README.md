@@ -29,7 +29,7 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 | Project | Description | Skills |
 |---------|-------------|--------|
 | 🐧 [Linux Project](./Linux-project/README.md) | Short one-line summary of what you built | Linux, Bash |
-| 🌐 [NGINX on EC2](./YOUR-FOLDER-NAME/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
+| 🌐 [NGINX on EC2](./Networking-project/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
 
 ## 📫 Connect With Me
 
