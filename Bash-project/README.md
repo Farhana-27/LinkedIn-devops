@@ -420,4 +420,70 @@ scroll.txt has 6 lines
 ```
 No file provided
 ```
+# 📊 Level 7: File Sorting Script
+
+**Mission:** Write a script that sorts all `.txt` files in a directory by their size, from smallest to largest, and displays the sorted list.
+
+---
+
+## Step 1: Give the files different sizes
+
+Add different amounts of text to the `.txt` files in `Arena`, for example:
+
+```bash
+echo "Some text here" > warrior.txt
+```
+**Why:** The files need different sizes so the sort has something to show. `>` writes the text into the file.
+
+## Step 2: Create the script in Vim
+
+```bash
+vim sort_files.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+echo "Text files sorted by size (smallest to largest):"
+ls -lSr *.txt
+```
+
+**Why:**
+- `*.txt` selects every file ending in `.txt`.
+- `-S` sorts by size, largest first.
+- `-r` reverses the order, so it's smallest first.
+- `-l` shows the long format, including each file's size.
+- `echo` prints a heading above the list.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 3: Make it executable
+
+```bash
+chmod +x sort_files.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 4: Run the script
+
+```bash
+./sort_files.sh
+```
+**Why:** `./` runs the script from the current folder.
+
+## ✅ Output
+
+```
+Text files sorted by size (smallest to largest):
+-rw-r--r--@ 1 farhanatasneem  staff   0 Nov 14 00:12 hero.txt
+-rw-r--r--@ 1 farhanatasneem  staff  19 Nov 14 12:14 archer.txt
+-rw-r--r--@ 1 farhanatasneem  staff  28 Nov 14 12:13 warrior.txt
+-rwxr-xr-x@ 1 farhanatasneem  staff  39 Nov 14 11:30 scroll.txt
+-rw-r--r--@ 1 farhanatasneem  staff  50 Nov 14 12:13 mage.txt
+```
+
+The size in bytes (the number before the date) goes up from 0 to 50, which confirms the files are sorted smallest to largest.
+
 
