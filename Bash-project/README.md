@@ -575,4 +575,120 @@ quest.log
 ```
 No search word provided
 ```
+# 👀 Level 9: Script to Monitor Directory Changes
+
+**Mission:** Write a script that monitors a directory for any changes (file creation, modification, or deletion) and logs the changes with a timestamp.
+
+---
+
+## How It Works
+
+The script checks the folder every 2 seconds and compares it with the previous check:
+- A file there **now** but not **before** → **CREATED**
+- A file there **before** but not **now** → **DELETED**
+- A file in both whose modified time or size changed → **MODIFIED**
+
+## Step 1: Create the script in Vim
+
+```bash
+vim monitor.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+dir="${1:-.}"
+log="$HOME/changes.log"
+
+cd "$dir" || exit
+echo "Monitoring $dir - press Ctrl + C to stop"
+
+ls > /tmp/before.txt
+stat -f "%N %m %z" * | sort > /tmp/before_stat.txt
+
+while true
+do
+  sleep 2
+  ls > /tmp/after.txt
+  stat -f "%N %m %z" * | sort > /tmp/after_stat.txt
+  time=$(date '+%Y-%m-%d %H:%M:%S')
+
+  # Created: in the new list but not the old one
+  for file in $(comm -13 /tmp/before.txt /tmp/after.txt); do
+    echo "$time CREATED: $file" | tee -a "$log"
+  done
+
+  # Deleted: in the old list but not the new one
+  for file in $(comm -23 /tmp/before.txt /tmp/after.txt); do
+    echo "$time DELETED: $file" | tee -a "$log"
+  done
+
+  # Modified: details changed, and the file already existed
+  for file in $(comm -13 /tmp/before_stat.txt /tmp/after_stat.txt | awk '{print $1}'); do
+    if grep -qx "$file" /tmp/before.txt; then
+      echo "$time MODIFIED: $file" | tee -a "$log"
+    fi
+  done
+
+  mv /tmp/after.txt /tmp/before.txt
+  mv /tmp/after_stat.txt /tmp/before_stat.txt
+done
+```
+
+**Why:**
+- `dir="${1:-.}"` watches the folder given as an argument, or the current folder if none is given.
+- `log="$HOME/changes.log"` keeps the log outside the watched folder, so writing to it isn't counted as a change.
+- `cd "$dir" || exit` moves into the folder, or stops if it doesn't exist.
+- `ls` and `stat -f "%N %m %z"` save a snapshot of each file's name, modified time and size.
+- `while true` with `sleep 2` repeats the check every 2 seconds until stopped.
+- `date` creates the timestamp.
+- `comm` compares the old and new snapshots to find created, deleted and modified files.
+- `awk '{print $1}'` takes just the filename from each line.
+- `grep -qx` checks the file existed before, so new files aren't also reported as modified.
+- `tee -a` shows each change on screen and appends it to the log.
+- `mv` makes the new snapshot the old one for the next check.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Make it executable
+
+```bash
+chmod +x monitor.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 3: Start monitoring
+
+```bash
+./monitor.sh
+```
+**Why:** Starts the script watching the current folder. It keeps running until stopped.
+
+## Step 4: Make changes in a second Terminal window
+
+```bash
+echo "New armour" >> warrior.txt
+touch dragon.txt
+rm dragon.txt
+```
+**Why:** The script is busy watching in the first window, so the changes are made from a second one to test all three types of change.
+
+## ✅ Output
+
+```
+2026-11-14 12:43:13 MODIFIED: warrior.txt
+2026-11-14 12:43:28 CREATED: dragon.txt
+2026-11-14 12:43:32 DELETED: dragon.txt
+```
+
+## Step 5: Stop the script and check the log
+
+Press **Ctrl + C** in the first window, then:
+
+```bash
+cat ~/changes.log
+```
+**Why:** Confirms the changes were saved to the log file, not just shown on screen.
 
