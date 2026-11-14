@@ -258,3 +258,96 @@ ls backup
 ```
 archer.txt  hero.txt  mage.txt  warrior.txt
 ```
+
+# ⚔️ Level 5: The Boss Battle - Combining Basics
+
+**Mission:** Write a script that:
+1. Creates a directory named `Battlefield`
+2. Inside `Battlefield`, creates `knight.txt`, `sorcerer.txt` and `rogue.txt`
+3. Checks if `knight.txt` exists and, if it does, moves it to a new directory called `Archive`
+4. Lists the contents of both `Battlefield` and `Archive`
+
+---
+
+## Step 1: Move into the Arena directory
+
+```bash
+cd Arena
+```
+**Why:** Keeps all the game files together in one place.
+
+## Step 2: Create the script file
+
+```bash
+touch boss.sh
+```
+**Why:** `touch` creates an empty file to hold the script.
+
+## Step 3: Write the script in Vim
+
+```bash
+vim boss.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+# 1. Create the Battlefield directory
+mkdir -p Battlefield
+
+# 2. Create the three files inside it
+touch Battlefield/knight.txt Battlefield/sorcerer.txt Battlefield/rogue.txt
+
+# 3. If knight.txt exists, move it to Archive
+if [ -f Battlefield/knight.txt ]; then
+  mkdir -p Archive
+  mv Battlefield/knight.txt Archive/
+  echo "knight.txt moved to Archive"
+else
+  echo "knight.txt not found"
+fi
+
+# 4. List the contents of both directories
+echo "Battlefield:"
+ls Battlefield
+echo "Archive:"
+ls Archive
+```
+
+**Why:**
+- `#` comments label each part of the mission. Bash ignores them.
+- `mkdir -p` creates a folder without an error if it already exists.
+- `Battlefield/knight.txt` works on a file inside a folder without needing to `cd` into it.
+- `if [ -f ... ]` checks the file exists before moving it.
+- `mv` moves the file, so it's removed from `Battlefield`.
+- `ls` lists each folder's contents to confirm the result.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 4: Make it executable
+
+```bash
+chmod +x boss.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 5: Run the script
+
+```bash
+./boss.sh
+```
+**Why:** `./` runs the script from the current folder.
+
+## ✅ Output
+
+```
+knight.txt moved to Archive
+Battlefield:
+rogue.txt  sorcerer.txt
+Archive:
+knight.txt
+```
+
+
