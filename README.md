@@ -30,7 +30,7 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 |---------|-------------|--------|
 | 🐧 [Linux Project](./Linux-project/README.md) | Short one-line summary of what you built | Linux, Bash |
 | 🌐 [NGINX on EC2](./Networking-project/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
-| 📜 [Bash Scripting Challenges](./Bash-project/README.md) | Step-by-step Bash challenges covering file management, loops, conditionals and scripting basics | Bash, Linux |
+| 🎮 [Bash Battle Arena](./Bash-project/README.md) | A game-style series of Bash challenges covering file management, loops, conditionals and scripting basics | Bash, Linux |
 
 ## 📫 Connect With Me
 
