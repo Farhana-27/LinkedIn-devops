@@ -486,4 +486,93 @@ Text files sorted by size (smallest to largest):
 
 The size in bytes (the number before the date) goes up from 0 to 50, which confirms the files are sorted smallest to largest.
 
+# 🔍 Level 8: Multi-File Searcher
+
+**Mission:** Create a script that searches for a specific word or phrase across all `.log` files in a directory and outputs the names of the files that contain the word or phrase.
+
+---
+
+## Step 1: Create test log files
+
+```bash
+echo "The dragon attacked the village" > battle.log
+echo "The knight found a dragon egg" > quest.log
+echo "The camp was quiet tonight" > camp.log
+```
+**Why:** The script needs `.log` files to search. Two mention "dragon" and one doesn't, to check only the right files are listed.
+
+## Step 2: Create the script in Vim
+
+```bash
+vim search_logs.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "No search word provided"
+else
+  echo "Files containing '$1':"
+  grep -l "$1" *.log
+fi
+```
+
+**Why:**
+- `$1` holds the word or phrase typed after the script name.
+- `-z "$1"` checks whether no search word was given.
+- `grep` searches inside files for text.
+- `-l` prints only the names of matching files, not the matching lines.
+- `*.log` searches every file ending in `.log`.
+- Quotes around `"$1"` allow searching for phrases with spaces.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 3: Make it executable
+
+```bash
+chmod +x search_logs.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 4: Search for a word
+
+```bash
+./search_logs.sh dragon
+```
+
+**Output:**
+```
+Files containing 'dragon':
+battle.log
+quest.log
+```
+`camp.log` isn't listed because it doesn't contain "dragon".
+
+## Step 5: Search for a phrase
+
+```bash
+./search_logs.sh "dragon egg"
+```
+**Why:** Tests that phrases work too. Quotes keep the phrase together as one argument.
+
+**Output:**
+```
+Files containing 'dragon egg':
+quest.log
+```
+
+## Step 6: Run with no search word
+
+```bash
+./search_logs.sh
+```
+**Why:** Tests that the script handles a missing argument.
+
+**Output:**
+```
+No search word provided
+```
 
