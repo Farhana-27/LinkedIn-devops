@@ -692,3 +692,112 @@ cat ~/changes.log
 ```
 **Why:** Confirms the changes were saved to the log file, not just shown on screen.
 
+# 🏆 Level 10: Boss Battle 2 - Intermediate Scripting
+
+**Mission:** Write a script that:
+1. Creates a directory called `Arena_Boss`
+2. Creates 5 text files inside it, named `file1.txt` to `file5.txt`
+3. Generates a random number of lines (between 10 and 20) in each file
+4. Sorts these files by their size and displays the list
+5. Checks if any of the files contain the word `Victory` and, if found, moves the file to a directory called `Victory_Archive`
+
+---
+
+## Step 1: Create the script in Vim
+
+```bash
+vim boss2.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+# 1. Create the directory
+mkdir -p Arena_Boss
+
+# 2 & 3. Create 5 files, each with 10-20 random lines
+for i in {1..5}
+do
+  lines=$((RANDOM % 11 + 10))
+  > Arena_Boss/file$i.txt
+
+  for j in $(seq 1 $lines)
+  do
+    if [ $((RANDOM % 20)) -eq 0 ]; then
+      echo "Victory" >> Arena_Boss/file$i.txt
+    else
+      echo "Battle line $j" >> Arena_Boss/file$i.txt
+    fi
+  done
+done
+
+# 4. Sort the files by size and display them
+echo "Files sorted by size (smallest to largest):"
+ls -lSr Arena_Boss/*.txt
+
+# 5. Move any file containing 'Victory' to Victory_Archive
+mkdir -p Victory_Archive
+for file in Arena_Boss/*.txt
+do
+  if grep -q "Victory" "$file"; then
+    mv "$file" Victory_Archive/
+    echo "Victory found in $(basename "$file") - moved to Victory_Archive"
+  fi
+done
+```
+
+**Why:**
+- `mkdir -p` creates the folders without an error if they already exist.
+- `for i in {1..5}` loops 5 times, creating `file1.txt` to `file5.txt`.
+- `$RANDOM` gives a random number. `% 11 + 10` keeps it between 10 and 20.
+- `> file` empties the file first, so re-running doesn't pile on extra lines.
+- `seq 1 $lines` is used because `{1..$lines}` doesn't work with variables.
+- `RANDOM % 20 -eq 0` is true about 1 time in 20, so "Victory" appears randomly.
+- `>>` adds each line to the end of the file.
+- `ls -lSr` sorts the files by size, smallest first.
+- `grep -q` checks for "Victory" without printing the match.
+- `mv` moves matching files into `Victory_Archive`.
+- `basename` shows just the filename in the message.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Make it executable
+
+```bash
+chmod +x boss2.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 3: Run the script
+
+```bash
+./boss2.sh
+```
+
+**Output (files sorted by size):**
+```
+-rw-r--r--@ 1 farhanatasneem  staff  141 Nov 14 13:27 Arena_Boss/file5.txt
+-rw-r--r--@ 1 farhanatasneem  staff  156 Nov 14 13:27 Arena_Boss/file1.txt
+-rw-r--r--@ 1 farhanatasneem  staff  209 Nov 14 13:27 Arena_Boss/file4.txt
+-rw-r--r--@ 1 farhanatasneem  staff  246 Nov 14 13:27 Arena_Boss/file2.txt
+-rw-r--r--@ 1 farhanatasneem  staff  263 Nov 14 13:27 Arena_Boss/file3.txt
+```
+
+Because the lines are random, "Victory" doesn't appear on every run. This run had none, so the script was run again until it did.
+
+## Step 4: Check the Victory files
+
+```bash
+grep "Victory" Victory_Archive/*.txt
+```
+**Why:** Confirms that only files containing "Victory" were moved.
+
+**Output:**
+```
+Victory_Archive/file3.txt:Victory
+Victory_Archive/file3.txt:Victory
+Victory_Archive/file4.txt:Victory
+```
+`file3.txt` had "Victory" twice and `file4.txt` once, so both were moved to `Victory_Archive`.
