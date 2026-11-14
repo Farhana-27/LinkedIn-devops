@@ -914,3 +914,117 @@ OK: . is within the limit.
 ```
 Usage: ./disk_report.sh <directory> <threshold_in_KB>
 ```
+
+# ⚙️ Level 12: Simple Configuration File Parser
+
+**Mission:** Write a script that reads a configuration file in the format `KEY=VALUE` and prints each key-value pair.
+
+---
+
+## Step 1: Create a config file
+
+```bash
+vim game.conf
+```
+
+Press `i` to start typing, then add:
+
+```
+# Game settings
+PLAYER_NAME=Farhana
+LEVEL=12
+WEAPON=Sword
+
+HEALTH=100
+```
+
+**Why:** The script needs a config file to read. The comment and blank line test that the script skips them, as real config files often have both.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Create the script in Vim
+
+```bash
+vim parse_config.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+file="$1"
+
+# Check a file was given
+if [ -z "$file" ]; then
+  echo "Usage: ./parse_config.sh <config_file>"
+  exit 1
+fi
+
+# Check the file exists
+if [ ! -f "$file" ]; then
+  echo "File $file not found"
+  exit 1
+fi
+
+# Read the file one line at a time
+while IFS='=' read -r key value
+do
+  # Skip empty lines and comments
+  if [ -z "$key" ] || [[ "$key" == \#* ]]; then
+    continue
+  fi
+
+  echo "Key: $key, Value: $value"
+done < "$file"
+```
+
+**Why:**
+- `$1` is the config file passed as an argument.
+- `-z` and `! -f` check that a file was given and that it exists.
+- `while read ... done < "$file"` reads the file one line at a time.
+- `IFS='='` splits each line at the `=` sign.
+- `read -r key value` stores the two halves in `key` and `value`.
+- `[[ "$key" == \#* ]]` checks whether the line starts with `#` (a comment).
+- `continue` skips blank lines and comments.
+- `echo` prints each key-value pair.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 3: Make it executable
+
+```bash
+chmod +x parse_config.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 4: Run the script
+
+```bash
+./parse_config.sh game.conf
+```
+
+## ✅ Output
+
+```
+Key: PLAYER_NAME, Value: Farhana
+Key: LEVEL, Value: 12
+Key: WEAPON, Value: Sword
+Key: HEALTH, Value: 100
+```
+
+The comment and blank line were skipped.
+
+## Step 5: Test the error checks
+
+```bash
+./parse_config.sh
+./parse_config.sh missing.conf
+```
+**Why:** Tests that the script handles a missing argument and a file that doesn't exist.
+
+**Output:**
+```
+Usage: ./parse_config.sh <config_file>
+File missing.conf not found
+```
