@@ -801,3 +801,116 @@ Victory_Archive/file3.txt:Victory
 Victory_Archive/file4.txt:Victory
 ```
 `file3.txt` had "Victory" twice and `file4.txt` once, so both were moved to `Victory_Archive`.
+
+# 💽 Level 11: Automated Disk Space Report
+
+**Mission:** Create a script that checks the disk space usage of a specified directory and sends an alert if the usage exceeds a given threshold.
+
+---
+
+## Step 1: Create the script in Vim
+
+```bash
+vim disk_report.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+dir="$1"
+threshold="$2"
+
+# Check both arguments were given
+if [ -z "$dir" ] || [ -z "$threshold" ]; then
+  echo "Usage: ./disk_report.sh <directory> <threshold_in_KB>"
+  exit 1
+fi
+
+# Check the directory exists
+if [ ! -d "$dir" ]; then
+  echo "Directory $dir not found"
+  exit 1
+fi
+
+# Get the folder's size in KB
+usage=$(du -sk "$dir" | awk '{print $1}')
+
+echo "Disk usage of $dir: $usage KB (threshold: $threshold KB)"
+
+# Compare against the threshold
+if [ "$usage" -gt "$threshold" ]; then
+  echo "ALERT: $dir is over the threshold!"
+else
+  echo "OK: $dir is within the limit."
+fi
+```
+
+**Why:**
+- `$1` and `$2` are the first and second arguments: the directory and the threshold.
+- `||` means "or", so the script stops if either argument is missing.
+- `exit 1` stops the script and signals an error.
+- `! -d` checks that the directory **doesn't** exist.
+- `du -sk` measures the folder's total size in kilobytes.
+- `awk '{print $1}'` keeps just the number from the `du` output.
+- `-gt` (greater than) compares the usage with the threshold.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Make it executable
+
+```bash
+chmod +x disk_report.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 3: Check the folder's size
+
+```bash
+du -sk .
+```
+**Why:** Shows the current folder's size, to pick sensible thresholds for testing. `.` means the current folder.
+
+**Output:**
+```
+88	.
+```
+
+## Step 4: Test with a low threshold
+
+```bash
+./disk_report.sh . 1
+```
+**Why:** 88 KB is over 1 KB, so this should trigger the alert.
+
+**Output:**
+```
+Disk usage of .: 88 KB (threshold: 1 KB)
+ALERT: . is over the threshold!
+```
+
+## Step 5: Test with a high threshold
+
+```bash
+./disk_report.sh . 100000
+```
+**Why:** 88 KB is under 100000 KB, so this should pass.
+
+**Output:**
+```
+Disk usage of .: 88 KB (threshold: 100000 KB)
+OK: . is within the limit.
+```
+
+## Step 6: Test with no arguments
+
+```bash
+./disk_report.sh
+```
+**Why:** Tests that the script handles missing arguments.
+
+**Output:**
+```
+Usage: ./disk_report.sh <directory> <threshold_in_KB>
+```
