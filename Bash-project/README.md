@@ -349,5 +349,75 @@ rogue.txt  sorcerer.txt
 Archive:
 knight.txt
 ```
+# 📜 Level 6: Argument Parsing
 
+**Mission:** Write a script that accepts a filename as an argument and prints the number of lines in that file. If no filename is provided, display a message saying `No file provided`.
+
+---
+
+## Step 1: Create a test file
+
+Create `scroll.txt` with 6 lines of text inside it.
+
+**Why:** The script needs a file to count the lines of.
+
+## Step 2: Create the script in Vim
+
+```bash
+vim count_lines.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "No file provided"
+else
+  lines=$(wc -l < "$1" | tr -d ' ')
+  echo "$1 has $lines lines"
+fi
+```
+
+**Why:**
+- `$1` holds the first argument, the filename typed after the script name.
+- `-z "$1"` checks whether no filename was given.
+- `wc -l` counts the lines in the file.
+- `tr -d ' '` removes the extra spaces macOS adds before the number.
+- `lines=$( ... )` saves the result in a variable.
+- Quotes around `"$1"` stop filenames with spaces from breaking the script.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 3: Make it executable
+
+```bash
+chmod +x count_lines.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 4: Run it with a filename
+
+```bash
+./count_lines.sh scroll.txt
+```
+**Why:** Tests that the script counts lines when a filename is given.
+
+**Output:**
+```
+scroll.txt has 6 lines
+```
+
+## Step 5: Run it without a filename
+
+```bash
+./count_lines.sh
+```
+**Why:** Tests that the script handles a missing argument.
+
+**Output:**
+```
+No file provided
+```
 
