@@ -185,3 +185,76 @@ touch hero.txt
 ```
 Hero found!
 ```
+# 💾 Level 4: File Manipulation
+
+**Mission:** Create a script that copies all `.txt` files from the `Arena` directory to a new directory called `Backup`.
+
+---
+
+## Step 1: Move into the Arena directory
+
+```bash
+cd Arena
+```
+**Why:** The script works on the folder it's run from, so it needs to be run inside `Arena`.
+
+## Step 2: Create the script file
+
+```bash
+touch backup.sh
+```
+**Why:** `touch` creates an empty file to hold the script.
+
+## Step 3: Write the script in Vim
+
+```bash
+vim backup.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+mkdir -p backup
+cp *.txt backup/
+echo "Backup complete!"
+```
+
+**Why:**
+- `mkdir -p backup` creates the `backup` folder. `-p` prevents an error if it already exists.
+- `cp *.txt backup/` copies every `.txt` file into `backup`. `*` is a wildcard meaning "any name".
+- `echo` prints a message to confirm the script finished.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 4: Make it executable
+
+```bash
+chmod +x backup.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 5: Run the script
+
+```bash
+./backup.sh
+```
+**Why:** `./` runs the script from the current folder.
+
+**Output:**
+```
+Backup complete!
+```
+
+## Step 6: Check the backup
+
+```bash
+ls backup
+```
+**Why:** Confirms the `.txt` files were copied into `Backup`.
+
+**Output:**
+```
+archer.txt  hero.txt  mage.txt  warrior.txt
+```
