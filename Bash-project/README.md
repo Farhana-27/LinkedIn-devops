@@ -1028,3 +1028,424 @@ The comment and blank line were skipped.
 Usage: ./parse_config.sh <config_file>
 File missing.conf not found
 ```
+
+# 🗄️ Level 13: Backup Script with Rotation
+
+**Mission:** Create a script that backs up a directory to a specified location and keeps only the last 5 backups.
+
+---
+
+## Step 1: Create the script in Vim
+
+```bash
+vim backup_rotate.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+src="$1"
+dest="$2"
+
+# Check both arguments were given
+if [ -z "$src" ] || [ -z "$dest" ]; then
+  echo "Usage: ./backup_rotate.sh <directory_to_back_up> <backup_location>"
+  exit 1
+fi
+
+# Check the source directory exists
+if [ ! -d "$src" ]; then
+  echo "Directory $src not found"
+  exit 1
+fi
+
+# Create the backup location if it doesn't exist
+mkdir -p "$dest"
+
+# Create a backup with the date and time in its name
+timestamp=$(date '+%Y%m%d_%H%M%S')
+backup_file="$dest/backup_$timestamp.tar.gz"
+tar -czf "$backup_file" "$src"
+echo "Backup created: $backup_file"
+
+# Keep only the 5 newest backups and delete the rest
+ls -t "$dest"/backup_*.tar.gz | tail -n +6 | while read -r old
+do
+  rm "$old"
+  echo "Deleted old backup: $old"
+done
+```
+
+**Why:**
+- `$1` and `$2` are the folder to back up and where to save the backups.
+- The `if` checks make sure both arguments were given and the folder exists.
+- `mkdir -p` creates the backup location if needed.
+- `date` adds a timestamp so each backup has a unique name.
+- `tar -czf` bundles and compresses the folder into one `.tar.gz` file.
+- `ls -t` lists the backups newest first.
+- `tail -n +6` skips the 5 newest, leaving only the older ones.
+- `while read` and `rm` delete each old backup.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Make it executable
+
+```bash
+chmod +x backup_rotate.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 3: Run a backup
+
+```bash
+./backup_rotate.sh . ~/arena_backups
+```
+**Why:** `.` backs up the current folder. Backups are saved outside it, in `~/arena_backups`, so they don't get included in each other.
+
+## Step 4: Test the rotation
+
+```bash
+for i in {1..7}; do ./backup_rotate.sh . ~/arena_backups; sleep 1; done
+```
+**Why:** Runs the script 7 times to create more than 5 backups and check the oldest are deleted. `sleep 1` gives each backup a different timestamp.
+
+## ✅ Output
+
+```
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145812.tar.gz
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145813.tar.gz
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145814.tar.gz
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145815.tar.gz
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145816.tar.gz
+Deleted old backup: /Users/farhanatasneem/arena_backups/backup_20261114_145710.tar.gz
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145817.tar.gz
+Deleted old backup: /Users/farhanatasneem/arena_backups/backup_20261114_145812.tar.gz
+Backup created: /Users/farhanatasneem/arena_backups/backup_20261114_145819.tar.gz
+Deleted old backup: /Users/farhanatasneem/arena_backups/backup_20261114_145813.tar.gz
+```
+
+Once there were more than 5 backups, the oldest was deleted after each new one.
+
+## Step 5: Check only 5 backups remain
+
+```bash
+ls ~/arena_backups
+```
+
+**Output:**
+```
+backup_20261114_145814.tar.gz
+backup_20261114_145815.tar.gz
+backup_20261114_145816.tar.gz
+backup_20261114_145817.tar.gz
+backup_20261114_145819.tar.gz
+```
+# 📋 Level 14: User-Friendly Menu Script
+
+**Mission:** Create an interactive script that presents a menu with options for different system tasks (e.g. check disk space, show system uptime, list users) and executes the chosen task.
+
+---
+
+## Menu Options
+
+| Option | Task | Command |
+|--------|------|---------|
+| 1 | Check disk space | `df -h /` |
+| 2 | Show system uptime | `uptime` |
+| 3 | List logged-in users | `who` |
+| 4 | Show date and time | `date` |
+| 5 | Show memory usage | `top -l 1 \| grep PhysMem` |
+| 6 | Show top 5 processes by CPU | `ps -Ao pid,pcpu,comm -r \| head -6` |
+| 7 | Show my IP address | `ipconfig getifaddr en0` |
+| 8 | Exit | |
+
+Options 1–3 are from the mission. Options 4–7 are extra tasks I added.
+
+## Step 1: Create the script in Vim
+
+```bash
+vim menu.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+while true
+do
+  echo ""
+  echo "===== System Menu ====="
+  echo "1) Check disk space"
+  echo "2) Show system uptime"
+  echo "3) List logged-in users"
+  echo "4) Show date and time"
+  echo "5) Show memory usage"
+  echo "6) Show top 5 processes by CPU"
+  echo "7) Show my IP address"
+  echo "8) Exit"
+  echo "======================="
+
+  read -p "Choose an option (1-8): " choice
+  echo ""
+
+  case $choice in
+    1) df -h / ;;
+    2) uptime ;;
+    3) who ;;
+    4) date ;;
+    5) top -l 1 | grep PhysMem ;;
+    6) ps -Ao pid,pcpu,comm -r | head -6 ;;
+    7) ipconfig getifaddr en0 ;;
+    8) echo "Goodbye!"; break ;;
+    *) echo "Invalid option, please choose 1-8" ;;
+  esac
+done
+```
+
+**Why:**
+- `while true` keeps showing the menu until the user chooses Exit.
+- `read -p` asks the user to choose and saves their answer in `choice`.
+- `case` runs a different command depending on the option chosen.
+- `;;` ends each option, and `esac` ends the `case`.
+- `break` leaves the loop to exit the script.
+- `*)` catches anything that isn't 1–8.
+
+**What each command does:**
+- `df -h /` shows disk space in human-readable sizes.
+- `uptime` shows how long the system has been running.
+- `who` lists logged-in users.
+- `date` shows the current date and time.
+- `top -l 1 | grep PhysMem` shows memory usage from one snapshot of `top`.
+- `ps -Ao pid,pcpu,comm -r | head -6` lists the top 5 processes by CPU use.
+- `ipconfig getifaddr en0` shows the Wi-Fi IP address.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Make it executable
+
+```bash
+chmod +x menu.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 3: Run the script
+
+```bash
+./menu.sh
+```
+
+**Output:**
+```
+===== System Menu =====
+1) Check disk space
+2) Show system uptime
+3) List logged-in users
+4) Show date and time
+5) Show memory usage
+6) Show top 5 processes by CPU
+7) Show my IP address
+8) Exit
+=======================
+Choose an option (1-8):
+```
+
+## Step 4: Test the options
+
+- Each option 1–7 runs its task, and the menu then appears again.
+- An invalid choice, e.g. `9`, shows:
+  ```
+  Invalid option, please choose 1-8
+  ```
+- Choosing `8` exits the script:
+  ```
+  Goodbye!
+  ```
+
+  # 👑 Level 15: Boss Battle 3 - Advanced Scripting
+
+**Mission:** Write a script that presents a menu with the following options and executes the chosen task:
+- Check disk space
+- Show system uptime
+- Back up the Arena directory and keep the last 3 backups
+- Parse a configuration file `settings.conf` and display the values
+
+This level combines the menu from Level 14, the backup rotation from Level 13 and the config parser from Level 12, using **functions** to keep the script organised.
+
+---
+
+## Step 1: Create the config file
+
+```bash
+vim settings.conf
+```
+
+Press `i` to start typing, then add:
+
+```
+# Arena settings
+ARENA_NAME=Bash Battle Arena
+MAX_PLAYERS=4
+DIFFICULTY=Hard
+
+BACKUP_LIMIT=3
+```
+
+**Why:** Option 4 needs a config file to read. The comment and blank line test that they're skipped.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 2: Create the script in Vim
+
+```bash
+vim boss3.sh
+```
+
+Press `i` to start typing, then add:
+
+```bash
+#!/bin/bash
+
+# Always run from the folder this script is in (Arena)
+cd "$(dirname "$0")" || exit
+
+backup_dir="$HOME/arena_boss_backups"
+config_file="settings.conf"
+
+# ---------- Functions ----------
+
+check_disk() {
+  df -h /
+}
+
+show_uptime() {
+  uptime
+}
+
+backup_arena() {
+  mkdir -p "$backup_dir"
+  timestamp=$(date '+%Y%m%d_%H%M%S')
+  backup_file="$backup_dir/arena_$timestamp.tar.gz"
+  tar -czf "$backup_file" .
+  echo "Backup created: $backup_file"
+
+  # Keep only the 3 newest backups
+  ls -t "$backup_dir"/arena_*.tar.gz | tail -n +4 | while read -r old
+  do
+    rm "$old"
+    echo "Deleted old backup: $old"
+  done
+}
+
+parse_config() {
+  if [ ! -f "$config_file" ]; then
+    echo "$config_file not found"
+    return
+  fi
+
+  while IFS='=' read -r key value
+  do
+    if [ -z "$key" ] || [[ "$key" == \#* ]]; then
+      continue
+    fi
+    echo "Key: $key, Value: $value"
+  done < "$config_file"
+}
+
+# ---------- Menu ----------
+
+while true
+do
+  echo ""
+  echo "===== Boss Battle 3 Menu ====="
+  echo "1) Check disk space"
+  echo "2) Show system uptime"
+  echo "3) Backup Arena (keep last 3)"
+  echo "4) Show settings.conf values"
+  echo "5) Exit"
+  echo "=============================="
+
+  read -p "Choose an option (1-5): " choice
+  echo ""
+
+  case $choice in
+    1) check_disk ;;
+    2) show_uptime ;;
+    3) backup_arena ;;
+    4) parse_config ;;
+    5) echo "Goodbye!"; break ;;
+    *) echo "Invalid option, please choose 1-5" ;;
+  esac
+done
+```
+
+**Why:**
+- `cd "$(dirname "$0")"` moves into the script's own folder, so it always backs up Arena wherever it's run from.
+- Variables at the top (`backup_dir`, `config_file`) make the settings easy to change.
+- **Functions** (`name() { ... }`) group each task into a named block, so the menu stays short.
+- `backup_arena` reuses Level 13's logic. `tail -n +4` keeps the newest 3 backups.
+- `parse_config` reuses Level 12's logic. `return` leaves the function early if the file is missing.
+- `while true`, `read -p` and `case` build the menu, like Level 14.
+- `break` exits the menu, and `*)` catches invalid choices.
+
+Save and exit with `Esc` → `:wq` → `Enter`.
+
+## Step 3: Make it executable
+
+```bash
+chmod +x boss3.sh
+```
+**Why:** Gives the file permission to run as a program.
+
+## Step 4: Run the script
+
+```bash
+./boss3.sh
+```
+
+**Output:**
+```
+===== Boss Battle 3 Menu =====
+1) Check disk space
+2) Show system uptime
+3) Backup Arena (keep last 3)
+4) Show settings.conf values
+5) Exit
+==============================
+Choose an option (1-5):
+```
+
+## Step 5: Test each option
+
+**Options 1 and 2** show the disk space and system uptime.
+
+**Option 3** was chosen 4 times. Each time a new backup was created, and on the 4th run the oldest was deleted, leaving 3.
+
+**Option 4:**
+```
+Key: ARENA_NAME, Value: Bash Battle Arena
+Key: MAX_PLAYERS, Value: 4
+Key: DIFFICULTY, Value: Hard
+Key: BACKUP_LIMIT, Value: 3
+```
+
+**Invalid choice (e.g. `9`):**
+```
+Invalid option, please choose 1-5
+```
+
+**Option 5:**
+```
+Goodbye!
+```
+
+## Step 6: Check only 3 backups remain
+
+```bash
+ls ~/arena_boss_backups
+```
+**Why:** Confirms the rotation kept only the 3 newest backups.
+
+
