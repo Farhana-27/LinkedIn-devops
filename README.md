@@ -29,9 +29,9 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 | Project | Description | Skills |
 |---------|-------------|--------|
 | 🐧 [Linux Project](./Linux-project/README.md) | Short one-line summary of what you built | Linux, Bash |
-| 🌐 [NGINX on EC2](./Networking-project/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
 | 🎮 [Bash Battle Arena](./Bash-project/README.md) | A game-style series of Bash challenges covering file management, loops, conditionals and scripting basics | Bash, Linux |
-
+| 🌐 [NGINX on EC2](./Networking-project/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
+| 🐳 [Docker Project](./Docker-project/README.md) | Containerising an application with Docker | Docker, Linux |
 ## 📫 Connect With Me
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/farhanatasneem-devops)
