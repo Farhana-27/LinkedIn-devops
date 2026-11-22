@@ -70,3 +70,8 @@ resource "aws_vpc_security_group_egress_rule" "all_outbound" {
   ip_protocol       = "-1"
 }
 
+# SSH key pair: uploads my public key so I can SSH into the instance
+resource "aws_key_pair" "wordpress_key" {
+  key_name   = "${var.project_name}-key"
+  public_key = file(pathexpand(var.public_key_path))
+}

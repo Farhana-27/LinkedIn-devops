@@ -39,3 +39,10 @@ variable "db_password" {
   sensitive   = true
 
 }
+
+variable "public_key_path" {
+  description = "Path to the SSH public key to upload to AWS"
+  type        = string
+  default     = "~/.ssh/terraform-wordpress.pub"
+}
+
