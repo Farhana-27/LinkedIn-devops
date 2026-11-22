@@ -75,3 +75,34 @@ resource "aws_key_pair" "wordpress_key" {
   key_name   = "${var.project_name}-key"
   public_key = file(pathexpand(var.public_key_path))
 }
+
+# EC2 instance: the server that runs WordPress
+resource "aws_instance" "wordpress" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.wordpress_key.key_name
+  vpc_security_group_ids      = [aws_security_group.wordpress_sg.id]
+  associate_public_ip_address = true
+
+  user_data = templatefile("${path.module}/user_data.sh", {
+    db_name     = var.db_name
+    db_user     = var.db_user
+    db_password = var.db_password
+  })
+  user_data_replace_on_change = true
+
+  root_block_device {
+    volume_type = "gp3"
+    volume_size = 8
+    encrypted   = true
+  }
+
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  tags = {
+    Name = "${var.project_name}-server"
+  }
+}
+
