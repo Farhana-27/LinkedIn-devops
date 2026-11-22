@@ -32,6 +32,7 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 | 🎮 [Bash Battle Arena](./Bash-project/README.md) | A game-style series of Bash challenges covering file management, loops, conditionals and scripting basics | Bash, Linux |
 | 🌐 [NGINX on EC2](./Networking-project/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
 | 🐳 [Docker Project](./Docker-project/README.md) | Containerising an application with Docker | Docker, Linux |
+| 🏗️ [WordPress on AWS with Terraform](./Terraform-wordpress/README.md) | Deployed a full WordPress stack on AWS EC2 entirely with Terraform: security group, SSH key pair and a boot script that installs Apache, MySQL and PHP automatically | Terraform, AWS, EC2, Bash, Linux |
 ## 📫 Connect With Me
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/farhanatasneem-devops)
