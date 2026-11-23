@@ -4,7 +4,7 @@
 
 One `terraform apply` creates the firewall, the SSH key, and an EC2 server that installs Apache, MySQL, PHP and WordPress by itself on first boot. One `terraform destroy` removes all of it.
 
-![WordPress site running on EC2](screenshots/09-wordpress-site.png)
+![WordPress site running on EC2](screenshots/wordpress1.png)
 
 ---
 
@@ -90,7 +90,7 @@ Terraform-wordpress/
 
 Files that exist locally but are **deliberately not in this repo**: `terraform.tfvars` (my IP and the database password), `terraform.tfstate` (contains the password in plain text) and `.terraform/` (downloaded provider plugins).
 
-![Project structure](screenshots/02-project-structure.png)
+![Project structure](screenshots/ls-la.png)
 
 ---
 
@@ -106,8 +106,7 @@ Files that exist locally but are **deliberately not in this repo**: `terraform.t
 aws sts get-caller-identity   # Arn ends in :user/farhana-devops, not :root
 ```
 
-![Terraform version update](screenshots/01-terraform-update.png)
-![Signed in as IAM user](screenshots/03-aws-caller-identity.png)
+![Signed in as IAM user](screenshots/getcalleridentity.png)
 
 **Region:** `eu-west-2` (London), the closest region to me.
 
@@ -157,7 +156,7 @@ terraform fmt       # standard formatting
 terraform validate  # checks syntax and references
 ```
 
-![terraform validate](screenshots/05-terraform-validate.png)
+![terraform validate](screenshots/terraformvalidate.png)
 
 ---
 
@@ -220,7 +219,7 @@ One security group, plus **one resource per rule**: the approach the current AWS
 - **SSH is restricted** because it gives control of the server, and bots constantly scan the internet for open port 22. With a `/32`, nobody else can even reach the port.
 - **The egress rule must be explicit:** AWS normally adds an "allow all outbound" rule, but **Terraform removes it**. Without my egress rule, the boot script couldn't download anything.
 
-![Security group inbound rules](screenshots/10-security-group-rules.png)
+![Security group inbound rules](screenshots/securitygroup1.png)
 
 ---
 
@@ -316,13 +315,13 @@ terraform apply
 
 Before applying, I read the plan carefully and spotted a typo in the security group description. I fixed it **before** applying, because a security group's description can't be changed after creation: fixing it later would have forced Terraform to **destroy and recreate** the security group.
 
-![terraform apply complete](screenshots/08-apply-complete.png)
+![terraform apply complete](screenshots/Terraformapply.png)
 
 Terraform finished in under 30 seconds, but **"Apply complete" only means the instance exists**. The user data script then took a few more minutes to install everything inside the server.
 
-![EC2 instances list](screenshots/12-ec2-instances-list.png)
-![EC2 instance details: IMDSv2 required, t3.micro, signed in as IAM user](screenshots/13-ec2-instance-details.png)
-![Security group details](screenshots/14-security-group.png)
+![EC2 instances list](screenshots/EC2instance.png)
+![EC2 instance details: IMDSv2 required, t3.micro, signed in as IAM user](screenshots/EC2instancepreview.png)
+![Security group details](screenshots/securitygroup2.png)
 
 ---
 
@@ -330,8 +329,8 @@ Terraform finished in under 30 seconds, but **"Apply complete" only means the in
 
 Visiting `http://<public-ip>` showed the WordPress setup screen. Reaching it at all proved the **database connection worked**, because WordPress only gets that far if `wp-config.php` and MySQL are set up correctly. I completed the setup (avoiding the username `admin`, which attackers guess first) and logged in.
 
-![WordPress dashboard](screenshots/11-wordpress-dashboard.png)
-![WordPress public site](screenshots/09-wordpress-site.png)
+![WordPress dashboard](screenshots/wordpress2.png)
+![WordPress public site](screenshots/wordpress1.png)
 
 *The site uses plain HTTP, so the browser shows "Not Secure". HTTPS is listed under future improvements.*
 
@@ -345,8 +344,8 @@ terraform destroy   # Plan: 0 to add, 0 to change, 6 to destroy
 
 Terraform removed everything in **reverse dependency order**: the security group rules and the instance first, then the key pair and the security group. Because `delete_on_termination` is `true`, the disk was removed too, so no orphaned resources are left costing money.
 
-![Destroy plan](screenshots/15b-terraform-destroy-plan.png)
-![Destroy complete](screenshots/15-terraform-destroy.png)
+![Destroy plan](screenshots/terraformplanbeforedestroy.webp)
+![Destroy complete](screenshots/terraformdestroy.png)
 
 The code is unchanged, so the whole stack can be rebuilt identically at any time with `terraform apply`.
 
