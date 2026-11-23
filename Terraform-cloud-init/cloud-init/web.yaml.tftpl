@@ -1,0 +1,70 @@
+#cloud-config
+# Rendered by Terraform templatefile(): ${project_name}
+
+package_update: true
+packages:
+  - nginx
+  - curl
+
+write_files:
+  - path: /var/www/html/index.html
+    owner: www-data:www-data
+    permissions: "0644"
+    defer: true
+    content: |
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>${project_name}</title>
+        <style>
+          body { font-family: sans-serif; background: #0f172a; color: #e2e8f0; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+          .card { background: #1e293b; padding: 2.5rem 3rem; border-radius: 12px; max-width: 560px; }
+          h1 { color: #7b42bc; margin-top: 0; }
+          code { background: #334155; padding: 2px 6px; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h1>Configured by cloud-init</h1>
+          <p>This server was built by <strong>Terraform</strong> and configured on first boot by <strong>cloud-init</strong>, with no manual steps.</p>
+          <p>Project: <code>${project_name}</code></p>
+          <p>Instance ID: <code>INSTANCE_ID_PLACEHOLDER</code></p>
+          <p>Built by ${owner_name}</p>
+        </div>
+      </body>
+      </html>
+
+  - path: /etc/nginx/sites-available/default
+    permissions: "0644"
+    defer: true
+    content: |
+      server {
+          listen 80 default_server;
+          listen [::]:80 default_server;
+          server_name _;
+          root /var/www/html;
+          index index.html;
+
+          add_header X-Configured-By "cloud-init" always;
+
+          location / {
+              try_files $uri $uri/ =404;
+          }
+
+          location /health {
+              default_type text/plain;
+              return 200 "ok\n";
+          }
+      }
+
+runcmd:
+  - 'TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300")'
+  - 'INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)'
+  - 'sed -i "s/INSTANCE_ID_PLACEHOLDER/$INSTANCE_ID/" /var/www/html/index.html'
+  - nginx -t
+  - systemctl enable nginx
+  - systemctl reload nginx
+
+final_message: "cloud-init finished after $UPTIME seconds"
+
