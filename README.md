@@ -33,6 +33,8 @@ Welcome to my DevOps portfolio! This repo brings together the hands-on projects 
 | 🌐 [NGINX on EC2](./Networking-project/README.md) | Hosted a website on AWS EC2 with NGINX, connected to a custom domain via Cloudflare DNS | AWS, Linux, NGINX, DNS |
 | 🐳 [Docker Project](./Docker-project/README.md) | Containerising an application with Docker | Docker, Linux |
 | 🏗️ [WordPress on AWS with Terraform](./Terraform-wordpress/README.md) | Deployed a full WordPress stack on AWS EC2 entirely with Terraform: security group, SSH key pair and a boot script that installs Apache, MySQL and PHP automatically | Terraform, AWS, EC2, Bash, Linux |
+| ☁️ [EC2 with Cloud-Init](./Terraform-cloud-init/README.md) | Automated an NGINX web server with a cloud-init YAML file, passed to EC2 as gzipped `user_data_base64` through a reusable Terraform module | Terraform, AWS, EC2, cloud-init, NGINX, YAML |
+
 ## 📫 Connect With Me
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/farhanatasneem-devops)
